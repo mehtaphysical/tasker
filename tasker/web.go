@@ -78,6 +78,21 @@ func addRoutes(t *Tasker) {
 		fmt.Fprintln(w, string(jsonTrigger))
 	})
 
+	http.HandleFunc("/tasks/history", func(w http.ResponseWriter, r *http.Request) {
+		if !methodCheck(http.MethodGet, w, r) {
+			return
+		}
+
+		history := t.TaskHistory()
+
+		historyJson, err := json.Marshal(history)
+		if err != nil {
+			http.Error(w, "Error creating response json", 500)
+			return
+		}
+		fmt.Fprintln(w, string(historyJson))
+	})
+
 	http.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
 		if !methodCheck(http.MethodGet, w, r) {
 			return

@@ -1,6 +1,7 @@
 package task
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/pborman/uuid"
 )
@@ -10,6 +11,12 @@ type TaskDefinition struct {
 	Env      map[string]string `json:"env"`
 	Children []string          `json:"children"`
 	Parents  []string          `json:"parents"`
+}
+
+type HistoricalTask struct {
+	Id     string     `json:"id"`
+	Name   string     `json:"name"`
+	Status TaskStatus `json:"status"`
 }
 
 type CompletedTask struct {
@@ -26,6 +33,42 @@ const (
 	Failed
 	Complete
 )
+
+func (t *TaskStatus) MarshalJSON() ([]byte, error) {
+	var statusString string
+	switch *t {
+	case Pending:
+		statusString = "pending"
+	case Running:
+		statusString = "running"
+	case Failed:
+		statusString = "failed"
+	case Complete:
+		statusString = "complete"
+	}
+
+	return []byte("\"" + statusString + "\""), nil
+}
+
+func (t *TaskStatus) UnmarshalJSON(p []byte) error {
+	var statusString string
+	err := json.Unmarshal(p, &statusString)
+	if err != nil {
+		return err
+	}
+	switch statusString {
+	case "pending":
+		*t = Pending
+	case "running":
+		*t = Running
+	case "failed":
+		*t = Failed
+	case "complete":
+		*t = Complete
+	}
+
+	return nil
+}
 
 type Task struct {
 	Id       string

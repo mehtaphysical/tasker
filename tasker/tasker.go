@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+var taskHistory []*task.Task = []*task.Task{}
+
 type Tasker struct {
 	Registry          task.TaskRegistry
 	Runner            runner.Runner
@@ -34,6 +36,7 @@ func (tasker *Tasker) Start(port string) {
 
 		// start children tasks
 		for _, t := range completedTask.Task.Children {
+			taskHistory = append(taskHistory, t)
 			tasker.TaskChan <- t
 		}
 	}
@@ -46,8 +49,21 @@ func (tasker *Tasker) TriggerTask(taskName string, triggerIn time.Duration) erro
 	}
 
 	time.Sleep(triggerIn)
+	taskHistory = append(taskHistory, taskToTrigger)
 	tasker.TaskChan <- taskToTrigger
 	return nil
+}
+
+func (tasker *Tasker) TaskHistory() []task.HistoricalTask {
+	tasks := []task.HistoricalTask{}
+	for _, t := range taskHistory {
+		tasks = append(tasks, task.HistoricalTask{
+			Id:     t.Id,
+			Name:   t.Name,
+			Status: t.Status,
+		})
+	}
+	return tasks
 }
 
 func CreateTaskerWorkerPool(number int, taskRunner runner.Runner) (chan *task.Task, chan task.CompletedTask) {
