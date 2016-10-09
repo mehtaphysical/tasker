@@ -17,7 +17,9 @@ directory is a shared volume mounted to each task within a graph.
 Tasker can be configured via command line flags:
 
 `-dockerUrl`: Docker server endpoint (default: unix:///var/run/docker.sock)
+
 `workers`: Number of workers in the worker pool (default: 3)
+
 `port`: Web server listen port (default: 8080)
 
 ## Todos
