@@ -40,12 +40,18 @@ func (runner *DockerRunner) Run(toRun *task.Task) error {
 		return handleRunnerError(err, toRun)
 	}
 
+	envVars := []string{}
+	for k, v := range toRun.Env {
+		envVars = append(envVars, fmt.Sprintf("%s=%s", k, v))
+	}
+
 	container, err := runner.DockerClient.CreateContainer(docker.CreateContainerOptions{
 		Name: toRun.Id,
 		Config: &docker.Config{
 			User:  "root",
-			Cmd:   []string{"sh", "task.sh"},
+			Cmd:   []string{"./task"},
 			Image: runner.getTaskImageName(toRun.Name),
+			Env:   envVars,
 			Volumes: map[string]struct{}{
 				volumeMountPoint: struct{}{},
 			},

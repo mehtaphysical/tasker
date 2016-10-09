@@ -1,5 +1,5 @@
 FROM ubuntu
 
-COPY ./task.sh ./task.sh
+COPY ./task ./task
 
-CMD task.sh
+CMD task

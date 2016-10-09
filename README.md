@@ -8,9 +8,9 @@ added by implementing the interface.
 ### Docker Task Runner
 
 The docker task runner runs tasks inside docker contianer by executing 
-a task.sh file inside the working directory. State can be saved and passed
-on to other tasks by saving files to the `/var/taskData` directory. This
-directory is a shared volume mounted to each task within a graph.
+a task executable file inside the working directory. State can be saved 
+and passed on to other tasks by saving files to the `/var/taskData` directory. 
+This directory is a shared volume mounted to each task within a graph.
 
 ## Configuration
 

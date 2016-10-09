@@ -11,11 +11,13 @@ func main() {
 	defaultTasks := []task.TaskDefinition{
 		{
 			Name:     "ryanmehta/task1",
+			Env:      map[string]string{},
 			Children: []string{"ryanmehta/task2"},
 			Parents:  []string{},
 		},
 		{
 			Name:     "ryanmehta/task2",
+			Env:      map[string]string{},
 			Children: []string{},
 			Parents:  []string{"ryanmehta/task1"},
 		},

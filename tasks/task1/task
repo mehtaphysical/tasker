@@ -1,0 +1,4 @@
+#!/bin/bash
+
+: ${TEXT:=HI}
+echo "$TEXT" > /var/taskData/task1
