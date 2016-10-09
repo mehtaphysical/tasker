@@ -10,8 +10,10 @@ import (
 func main() {
 	defaultTasks := []task.TaskDefinition{
 		{
-			Name:     "ryanmehta/task1",
-			Env:      map[string]string{},
+			Name: "ryanmehta/task1",
+			Env: map[string]string{
+				"TEXT": "DEFAULT_TEXT",
+			},
 			Children: []string{"ryanmehta/task2"},
 			Parents:  []string{},
 		},

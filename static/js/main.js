@@ -4,7 +4,6 @@ $(function() {
         Object.keys(tasks).forEach(function(taskName) {
             var $tr = $tbody.append("<tr></tr>");
             var task = tasks[taskName];
-            console.log(task.env)
             var env = task.env === null ? "none" : Object.keys(task.env).map(function(key) { return key + "=" + task.env[key] }).join(",");
             $tr.append("<td>" + task.name + "</td>");
             $tr.append("<td>" + env + "</td>");
@@ -14,6 +13,11 @@ $(function() {
             if (task.parents.length > 0) {
                 buttonClasses += " disabled"
             }
+            $tr.append('<button data-task-name="' + task.name + '" ' +
+                'data-task-env="' + env + '" ' +
+                'data-task-children="' + task.children + '" ' +
+                'data-task-parents="' + task.parents + '" ' +
+                'class="btn btn-default editTask" type="submit">edit</button>');
             $tr.append('<button data-task-name="' + task.name + '" class="' + buttonClasses + '" type="submit">trigger</button>');
 
         });
@@ -29,6 +33,20 @@ $(function() {
                 }),
                 dataType: "json"
             });
+        });
+
+        $(".editTask").click(function() {
+            var name = $(this).attr('data-task-name');
+            var env = $(this).attr('data-task-env');
+            var children = $(this).attr('data-task-children');
+            var parents = $(this).attr('data-task-parents');
+
+            $("#taskName").val(name);
+            $("#taskEnv").val(env);
+            $("#taskChildren").val(children);
+            $("#taskParents").val(parents);
+
+            $("#registerNewTaskModal").modal('show');
         })
     });
 
@@ -38,17 +56,13 @@ $(function() {
         var parents = $("#taskParents").val().split(/,\s?/).filter(function(taskName) { return taskName !== "" });
         var env = $("#taskEnv").val().split(",").reduce(function(acc, keyValue) {
             var keyValueArr = keyValue.split("=");
-            console.log(keyValueArr)
             if (keyValueArr.length !== 2) {
                 return acc
             }
             acc[keyValueArr[0]] = keyValueArr[1];
             debugger;
-            console.log(acc)
             return acc
         }, {});
-
-        console.log(env)
 
         $.ajax({
             type: "POST",
@@ -57,9 +71,12 @@ $(function() {
                 "name": taskName,
                 "children": children,
                 "parents": parents,
-                "env": env,
+                "env": env
             }),
-            dataType: "json"
+            dataType: "json",
+            success: function() {
+              location.reload()
+            }
         });
     })
 });
