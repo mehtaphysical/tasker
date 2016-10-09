@@ -14,11 +14,7 @@ type Tasker struct {
 	CompletedTaskChan chan task.CompletedTask
 }
 
-func NewTasker(workers int, tasks ...task.TaskDefinition) *Tasker {
-	taskRunner, err := runner.NewDockerRunner("unix:///var/run/docker.sock", "", "")
-	if err != nil {
-		panic("Error initializing task runner: " + err.Error())
-	}
+func NewTasker(taskRunner runner.Runner, workers int, tasks ...task.TaskDefinition) *Tasker {
 	taskChan, completed := CreateTaskerWorkerPool(workers, taskRunner)
 	return &Tasker{
 		Registry:          task.NewTaskRegistry(tasks...),
@@ -28,8 +24,8 @@ func NewTasker(workers int, tasks ...task.TaskDefinition) *Tasker {
 	}
 }
 
-func (tasker *Tasker) Start() {
-	go StartWeb(tasker)
+func (tasker *Tasker) Start(port string) {
+	go StartWeb(tasker, port)
 	for completedTask := range tasker.CompletedTaskChan {
 		if completedTask.Error != nil {
 			// handle failed tasks

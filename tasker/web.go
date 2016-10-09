@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/mehtaphysical/tasker/task"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 )
@@ -99,7 +100,8 @@ func methodCheck(wanted string, w http.ResponseWriter, r *http.Request) bool {
 	return true
 }
 
-func StartWeb(t *Tasker) {
+func StartWeb(t *Tasker, port string) {
 	addRoutes(t)
-	http.ListenAndServe(":8080", nil)
+	log.Print("Starting webserver on " + port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
