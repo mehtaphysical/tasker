@@ -1,9 +1,11 @@
 package task
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"github.com/pborman/uuid"
+	"io"
 )
 
 type TaskDefinition struct {
@@ -18,6 +20,7 @@ type HistoricalTask struct {
 	Id     string     `json:"id"`
 	Name   string     `json:"name"`
 	Status TaskStatus `json:"status"`
+	Output string     `json:"output"`
 }
 
 type CompletedTask struct {
@@ -72,13 +75,15 @@ func (t *TaskStatus) UnmarshalJSON(p []byte) error {
 }
 
 type Task struct {
-	Id       string
-	Name     string
-	Path     string
-	Env      map[string]string
-	Status   TaskStatus
-	Children []*Task
-	Parents  []*Task
+	Id           string
+	Name         string
+	Path         string
+	Env          map[string]string
+	Status       TaskStatus
+	Children     []*Task
+	Parents      []*Task
+	OutputBuffer io.ReadWriter
+	Output       string
 }
 
 type TaskRegistry map[string]TaskDefinition
@@ -118,12 +123,13 @@ func newTask(id, taskName string, nodes map[string]*Task, registry TaskRegistry)
 	}
 
 	task := &Task{
-		Id:      id,
-		Path:    taskDefinition.Path,
-		Status:  Pending,
-		Env:     taskDefinition.Env,
-		Name:    taskDefinition.Name,
-		Parents: parents,
+		Id:           id,
+		Path:         taskDefinition.Path,
+		Status:       Pending,
+		Env:          taskDefinition.Env,
+		Name:         taskDefinition.Name,
+		Parents:      parents,
+		OutputBuffer: bytes.NewBuffer([]byte{}),
 	}
 
 	nodes[task.Name] = task

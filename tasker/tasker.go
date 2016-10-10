@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/mehtaphysical/tasker/runner"
 	"github.com/mehtaphysical/tasker/task"
+	"io/ioutil"
 	"time"
 )
 
@@ -61,6 +62,7 @@ func (tasker *Tasker) TaskHistory() []task.HistoricalTask {
 			Id:     t.Id,
 			Name:   t.Name,
 			Status: t.Status,
+			Output: t.Output,
 		})
 	}
 	return tasks
@@ -85,6 +87,8 @@ func TaskerWorker(name string, taskRunner runner.Runner, taskChan chan *task.Tas
 
 		fmt.Println(fmt.Sprintf("Worker %s executing task %s with id %s", name, t.Name, t.Id))
 		err := taskRunner.Run(t)
+		output, _ := ioutil.ReadAll(t.OutputBuffer)
+		t.Output += string(output)
 		completed <- task.CompletedTask{
 			Id:    t.Id,
 			Task:  t,

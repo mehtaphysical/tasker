@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/fsouza/go-dockerclient"
 	"github.com/mehtaphysical/tasker/task"
-	"os"
 )
 
 const (
@@ -87,7 +86,7 @@ func (runner *DockerRunner) Run(toRun *task.Task) error {
 
 	err = runner.DockerClient.AttachToContainer(docker.AttachToContainerOptions{
 		Container:    container.ID,
-		OutputStream: os.Stdout,
+		OutputStream: toRun.OutputBuffer,
 		Stdout:       true,
 		Logs:         true,
 	})
