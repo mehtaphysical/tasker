@@ -45,12 +45,22 @@ func (runner *DockerRunner) Run(toRun *task.Task) error {
 		envVars = append(envVars, fmt.Sprintf("%s=%s", k, v))
 	}
 
+	err = runner.DockerClient.PullImage(docker.PullImageOptions{
+		Repository: runner.getTaskImageName(toRun.Path),
+		Tag:        "latest",
+	}, docker.AuthConfiguration{})
+	if err != nil {
+		return handleRunnerError(err, toRun)
+	}
+
 	container, err := runner.DockerClient.CreateContainer(docker.CreateContainerOptions{
-		Name: toRun.Id,
 		Config: &docker.Config{
+			Labels: map[string]string{
+				"task_id": toRun.Id,
+			},
 			User:  "root",
 			Cmd:   []string{"./task"},
-			Image: runner.getTaskImageName(toRun.Name),
+			Image: runner.getTaskImageName(toRun.Path),
 			Env:   envVars,
 			Volumes: map[string]struct{}{
 				volumeMountPoint: struct{}{},
@@ -84,6 +94,8 @@ func (runner *DockerRunner) Run(toRun *task.Task) error {
 	if err != nil {
 		return handleRunnerError(err, toRun)
 	}
+
+	runner.DockerClient.WaitContainer(container.ID)
 	toRun.Status = task.Complete
 
 	runner.DockerClient.RemoveContainer(docker.RemoveContainerOptions{

@@ -8,6 +8,7 @@ import (
 
 type TaskDefinition struct {
 	Name     string            `json:"name"`
+	Path     string            `json:"path"`
 	Env      map[string]string `json:"env"`
 	Children []string          `json:"children"`
 	Parents  []string          `json:"parents"`
@@ -73,6 +74,7 @@ func (t *TaskStatus) UnmarshalJSON(p []byte) error {
 type Task struct {
 	Id       string
 	Name     string
+	Path     string
 	Env      map[string]string
 	Status   TaskStatus
 	Children []*Task
@@ -117,6 +119,7 @@ func newTask(id, taskName string, nodes map[string]*Task, registry TaskRegistry)
 
 	task := &Task{
 		Id:      id,
+		Path:    taskDefinition.Path,
 		Status:  Pending,
 		Env:     taskDefinition.Env,
 		Name:    taskDefinition.Name,

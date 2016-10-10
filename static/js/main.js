@@ -6,6 +6,7 @@ $(function() {
             var task = tasks[taskName];
             var env = task.env === null ? "none" : Object.keys(task.env).map(function(key) { return key + "=" + task.env[key] }).join(",");
             $tr.append("<td>" + task.name + "</td>");
+            $tr.append("<td>" + task.path + "</td>");
             $tr.append("<td>" + env + "</td>");
             $tr.append("<td>" + task.children + "</td>");
             $tr.append("<td>" + task.parents + "</td>");
@@ -14,6 +15,7 @@ $(function() {
                 buttonClasses += " disabled"
             }
             $tr.append('<button data-task-name="' + task.name + '" ' +
+                'data-task-path="' + task.path + '" ' +
                 'data-task-env="' + env + '" ' +
                 'data-task-children="' + task.children + '" ' +
                 'data-task-parents="' + task.parents + '" ' +
@@ -37,11 +39,13 @@ $(function() {
 
         $(".editTask").click(function() {
             var name = $(this).attr('data-task-name');
+            var path = $(this).attr('data-task-path');
             var env = $(this).attr('data-task-env');
             var children = $(this).attr('data-task-children');
             var parents = $(this).attr('data-task-parents');
 
             $("#taskName").val(name);
+            $("#taskPath").val(path);
             $("#taskEnv").val(env);
             $("#taskChildren").val(children);
             $("#taskParents").val(parents);
@@ -52,6 +56,7 @@ $(function() {
 
     $("#registerNewTask").click(function() {
         var taskName = $("#taskName").val();
+        var taskPath = $("#taskPath").val();
         var children = $("#taskChildren").val().split(/,\s?/).filter(function(taskName) { return taskName !== "" });
         var parents = $("#taskParents").val().split(/,\s?/).filter(function(taskName) { return taskName !== "" });
         var env = $("#taskEnv").val().split(",").reduce(function(acc, keyValue) {
@@ -69,6 +74,7 @@ $(function() {
             url: "/tasks/register",
             data: JSON.stringify({
                 "name": taskName,
+                "path": taskPath,
                 "children": children,
                 "parents": parents,
                 "env": env

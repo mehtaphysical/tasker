@@ -10,18 +10,39 @@ import (
 func main() {
 	defaultTasks := []task.TaskDefinition{
 		{
-			Name: "ryanmehta/task1",
+			Name: "task1",
+			Path: "ryanmehta/file_writer",
 			Env: map[string]string{
 				"TEXT": "DEFAULT_TEXT",
 			},
-			Children: []string{"ryanmehta/task2"},
+			Children: []string{"task2"},
 			Parents:  []string{},
 		},
 		{
-			Name:     "ryanmehta/task2",
+			Name:     "task2",
+			Path:     "ryanmehta/file_printer",
 			Env:      map[string]string{},
 			Children: []string{},
-			Parents:  []string{"ryanmehta/task1"},
+			Parents:  []string{"task1"},
+		},
+		{
+			Name: "clone tasker",
+			Path: "ryanmehta/git_clone",
+			Env: map[string]string{
+				"CLONE_URL":    "https://github.com/mehtaphysical/tasker.git",
+				"CLONE_OUTPUT": "tasker",
+			},
+			Children: []string{"print tasker readme"},
+			Parents:  []string{},
+		},
+		{
+			Name: "print tasker readme",
+			Path: "ryanmehta/file_printer",
+			Env: map[string]string{
+				"PRINT_FILE_PATH": "/var/taskData/tasker/README.md",
+			},
+			Children: []string{},
+			Parents:  []string{"clone tasker"},
 		},
 	}
 

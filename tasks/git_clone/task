@@ -1,0 +1,5 @@
+#!/bin/bash
+
+: ${CLONE_OUTPUT:=git_clone}
+
+git clone $CLONE_URL /var/taskData/$CLONE_OUTPUT
