@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"fmt"
 	"github.com/mehtaphysical/tasker/task"
 	"os"
 	"os/exec"
@@ -31,6 +32,9 @@ func (r *ScriptRunner) Run(toRun *task.Task) error {
 	cmd.Stdout = toRun.OutputBuffer
 
 	cmd.Env = []string{"DATA_PATH=" + r.DataPath + "/" + toRun.Id}
+	for k, v := range toRun.Env {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", k, v))
+	}
 
 	err = cmd.Start()
 	toRun.Status = task.Running
