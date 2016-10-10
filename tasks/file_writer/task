@@ -1,4 +1,5 @@
 #!/bin/bash
 
 : ${TEXT:=HI}
-echo "$TEXT" > /var/taskData/task1
+: ${OUTPUT:=/var/taskData/task1}
+echo "$TEXT" > $OUTPUT
