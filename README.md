@@ -12,6 +12,14 @@ a task executable file inside the working directory. State can be saved
 and passed on to other tasks by saving files to the `/var/taskData` directory. 
 This directory is a shared volume mounted to each task within a graph.
 
+# Script Task Runner
+
+The script task runner runs tasks local to tasker by executing an executable
+script inside the `scriptBasePath` directory. State is saved and passed 
+between tasks by saving files to the local disk inside the `scriptDataPath`
+namespaced by the task id.
+
+
 ## Configuration
 
 Tasker can be configured via command line flags:
